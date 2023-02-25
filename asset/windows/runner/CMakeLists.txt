@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 project(runner LANGUAGES CXX)
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
-
-
 add_definitions(-D_WIN32 -DFLUTTER_DESKTOP_LIBRARY)
 
 # Define the application target. To change its name, change BINARY_NAME in the

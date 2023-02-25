@@ -6,7 +6,8 @@ package cmd
 import (
 	"github.com/doarvid/goflutter/internal/update"
 
-	"github.com/rs/zerolog/log"
+	"log"
+
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +28,7 @@ to quickly create a Cobra application.`,
 		} else {
 			proj_path = args[0]
 		}
-		log.Info().Msgf("project path:%s", proj_path)
+		log.Printf("project path:%s", proj_path)
 		update.Update(proj_path)
 	},
 }

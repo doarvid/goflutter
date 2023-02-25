@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"sync"
 
-	"github.com/rs/zerolog/log"
+	"log"
 )
 
 // ----- from go-flutter hover----
@@ -21,7 +21,7 @@ func (b *BinLookup) FullPath() string {
 		var err error
 		b.fullPath, err = exec.LookPath(b.Name)
 		if err != nil {
-			log.Error().Msgf("Failed to lookup `%s` executable: %s. %s", b.Name, err, b.InstallInstructions)
+			log.Printf("Failed to lookup `%s` executable: %s. %s", b.Name, err, b.InstallInstructions)
 			os.Exit(1)
 		}
 	})

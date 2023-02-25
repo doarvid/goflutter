@@ -10,7 +10,7 @@ import (
 
 	"github.com/doarvid/goflutter/pkg/binlookup"
 
-	"github.com/rs/zerolog/log"
+	"log"
 )
 
 var (
@@ -36,7 +36,7 @@ func (f *FlutterProject) isProjectFileExists(file string) bool {
 	fullpath := path.Join(f.path, file)
 	_, err := os.Stat(fullpath)
 	if err != nil {
-		log.Warn().Msgf("%s stat error:%s", fullpath, err.Error())
+		log.Printf("%s stat error:%s", fullpath, err.Error())
 	}
 	return err == nil
 }
@@ -57,10 +57,12 @@ func (f *FlutterProject) IsFlutterProject() bool {
 func (f *FlutterProject) UpdateFile(rootdir string, file string) error {
 	srcfile := path.Join(rootdir, file)
 	dstfile := path.Join(f.path, file)
-	log.Info().Msgf("%s => %s", srcfile, dstfile)
+	log.Printf("%s => %s", srcfile, dstfile)
 	if _, err := os.Stat(dstfile); err == nil {
 		os.Remove(dstfile)
 	}
+	dirpath := path.Dir(dstfile)
+	os.MkdirAll(dirpath, 0777)
 	data, err := ioutil.ReadFile(srcfile)
 	if err != nil {
 		return fmt.Errorf("source file %s is missing,err:%s", srcfile, err.Error())
@@ -74,6 +76,7 @@ func (f *FlutterProject) UpdateFile(rootdir string, file string) error {
 
 func (f *FlutterProject) Build() error {
 	cmd := exec.Command("flutter", "build", "windows")
+	cmd.Dir = f.path
 	d, err := cmd.Output()
 	if err != nil {
 		return err
