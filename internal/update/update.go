@@ -3,13 +3,14 @@ package update
 import (
 	"bytes"
 	"errors"
-	"goflutter/internal/flutter"
 	"io/fs"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/doarvid/goflutter/internal/flutter"
 
 	"github.com/rs/zerolog/log"
 )

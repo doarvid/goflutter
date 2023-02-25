@@ -4,7 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"goflutter/internal/update"
+	"github.com/doarvid/goflutter/internal/update"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"

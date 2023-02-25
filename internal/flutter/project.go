@@ -3,11 +3,12 @@ package flutter
 import (
 	"errors"
 	"fmt"
-	"goflutter/pkg/binlookup"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
+
+	"github.com/doarvid/goflutter/pkg/binlookup"
 
 	"github.com/rs/zerolog/log"
 )
