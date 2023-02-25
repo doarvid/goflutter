@@ -112,6 +112,7 @@ func buildfloders(dir string, top bool) ([]string, error) {
 	}
 	return paths, nil
 }
+
 func Update(projpath string) error {
 
 	assetpath, err := detectAssetPath()
@@ -141,6 +142,11 @@ func Update(projpath string) error {
 		log.Printf("project build error %s", err.Error())
 		return err
 	}
-	log.Printf("build flutter project finished!!")
+
+	log.Printf("fix template ...")
+	proj.UpdateFileSym("flutter/runner.go", "runnerlib", "-l"+proj.Name())
+	log.Printf("build go app...")
+	proj.BuildGoApp()
+	log.Printf("finished")
 	return nil
 }

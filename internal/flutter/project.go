@@ -7,8 +7,11 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 
+	"github.com/akavel/rsrc/rsrc"
 	"github.com/doarvid/goflutter/pkg/binlookup"
+	"github.com/spf13/viper"
 
 	"log"
 )
@@ -21,13 +24,17 @@ var (
 )
 
 type FlutterProject struct {
-	path string
+	path   string
+	config *viper.Viper
 }
 
 func NewFlutterProject(path string) (*FlutterProject, error) {
 	proj := &FlutterProject{path: path}
 	if !proj.IsFlutterProject() {
 		return nil, errors.New(path + " is not flutter project directory")
+	}
+	if err := proj.init(); err != nil {
+		return nil, errors.New("project init error")
 	}
 	return proj, nil
 }
@@ -54,6 +61,13 @@ func (f *FlutterProject) IsFlutterProject() bool {
 	return true
 }
 
+func (f *FlutterProject) init() error {
+	config := path.Join(f.path, "pubspec.yaml")
+	f.config = viper.New()
+	f.config.SetConfigFile(config)
+	return f.config.ReadInConfig()
+}
+
 func (f *FlutterProject) UpdateFile(rootdir string, file string) error {
 	srcfile := path.Join(rootdir, file)
 	dstfile := path.Join(f.path, file)
@@ -74,6 +88,9 @@ func (f *FlutterProject) UpdateFile(rootdir string, file string) error {
 	return nil
 }
 
+func (f *FlutterProject) Name() string {
+	return f.config.GetString("name")
+}
 func (f *FlutterProject) Build() error {
 	cmd := exec.Command("flutter", "build", "windows")
 	cmd.Dir = f.path
@@ -82,5 +99,43 @@ func (f *FlutterProject) Build() error {
 		return err
 	}
 	println(string(d))
+	return nil
+}
+func (f *FlutterProject) BuildGoApp() error {
+	rsrcfile := path.Join(f.path, "goflutter.syso")
+	err := rsrc.Embed(rsrcfile, "amd64", path.Join(f.path, "goflutter.manifest"), "")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	dstfile := path.Join(f.path, fmt.Sprintf("/build/windows/runner/Release/%s.exe", f.Name()))
+	cmdargs := []string{"go", "build", "-ldflags", "-H windowsgui", "-o", dstfile}
+	cmd := exec.Command(cmdargs[0], cmdargs[1:]...)
+	cmd.Dir = f.path
+	d, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+	log.Println(strings.Join(cmdargs, " "))
+	if len(d) > 0 {
+		println(string(d))
+	}
+	return nil
+}
+
+func (f *FlutterProject) UpdateFileSym(filename string, symbol string, val string) error {
+	fp := path.Join(f.path, filename)
+	data, err := ioutil.ReadFile(fp)
+	if err != nil {
+		return err
+	}
+	log.Printf("update %s symbol %s value %s", fp, symbol, val)
+	ctx := string(data)
+	newctx := strings.ReplaceAll(ctx, fmt.Sprintf("{{%s}}", symbol), val)
+	err = ioutil.WriteFile(fp, []byte(newctx), 0777)
+	if err != nil {
+		return err
+	}
 	return nil
 }

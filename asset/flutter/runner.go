@@ -2,7 +2,7 @@ package flutter
 
 //#cgo CFLAGS:-I./flutter
 //#cgo CFLAGS:-I./ -std=c17
-//#cgo LDFLAGS: -L./ -L../build/windows/runner/Release -lflutter_runner
+//#cgo LDFLAGS: -L./ -L../build/windows/runner/Release {{runnerlib}}
 //#include <runner.h>
 //#include <stdio.h>
 import "C"
