@@ -1,4 +1,4 @@
-module goflutter
+module github.com/doarvid/goflutter
 
 go 1.19
 
