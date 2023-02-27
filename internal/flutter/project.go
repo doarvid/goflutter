@@ -101,7 +101,7 @@ func (f *FlutterProject) Build() error {
 	println(string(d))
 	return nil
 }
-func (f *FlutterProject) BuildGoApp() error {
+func (f *FlutterProject) BuildGoApp(gui bool) error {
 	rsrcfile := path.Join(f.path, "goflutter.syso")
 	err := rsrc.Embed(rsrcfile, "amd64", path.Join(f.path, "goflutter.manifest"), "")
 	if err != nil {
@@ -111,13 +111,28 @@ func (f *FlutterProject) BuildGoApp() error {
 
 	dstfile := path.Join(f.path, fmt.Sprintf("/build/windows/runner/Release/%s.exe", f.Name()))
 	cmdargs := []string{"go", "build", "-ldflags", "-H windowsgui", "-o", dstfile}
+	if !gui {
+		cmdargs = []string{"go", "build", "-o", dstfile}
+	}
 	cmd := exec.Command(cmdargs[0], cmdargs[1:]...)
 	cmd.Dir = f.path
 	d, err := cmd.Output()
 	if err != nil {
 		return err
 	}
-	log.Println(strings.Join(cmdargs, " "))
+
+	builder := strings.Builder{}
+	for _, c := range cmdargs {
+		if strings.Contains(c, " ") {
+			builder.WriteString("\"")
+			builder.WriteString(c)
+			builder.WriteString("\"")
+		} else {
+			builder.WriteString(c)
+		}
+		builder.WriteString(" ")
+	}
+	log.Println(builder.String())
 	if len(d) > 0 {
 		println(string(d))
 	}

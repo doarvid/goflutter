@@ -4,10 +4,91 @@
 
 #include "flutter/generated_plugin_registrant.h"
 
+
+
+#include <map>
+
+#include <flutter/method_channel.h>
+#include <flutter/plugin_registrar_windows.h>
+#include <flutter/standard_method_codec.h>
+
+namespace {
+
+    class StandardPlugin : public flutter::Plugin {
+    public:
+        static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar, FlutterPlugin* pluginCfg);
+
+        StandardPlugin();
+
+        virtual ~StandardPlugin();
+
+        FlutterPlugin* pluginCfg;
+
+    private:
+        void HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue>& method_call, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+    };
+
+    void StandardPlugin::RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar, FlutterPlugin* pluginCfg) {
+        auto channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(registrar->messenger(), pluginCfg->channel, &flutter::StandardMethodCodec::GetInstance());
+
+        auto plugin = std::make_unique<StandardPlugin>();
+        plugin->pluginCfg = pluginCfg;
+
+        channel->SetMethodCallHandler(
+            [plugin_pointer = plugin.get()](const auto& call, auto result) {
+            plugin_pointer->HandleMethodCall(call, std::move(result));
+        }
+        );
+
+        registrar->AddPlugin(std::move(plugin));
+    }
+
+    StandardPlugin::StandardPlugin() {}
+
+    StandardPlugin::~StandardPlugin() {}
+
+    void StandardPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue>& method_call, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+       static const flutter::StandardMethodCodec& decoder = flutter::StandardMethodCodec::GetInstance();
+       std::unique_ptr<std::vector<uint8_t>> data = decoder.EncodeMethodCall(method_call);
+       
+       OutputDebugStringA("handle method call");
+
+       if (this->pluginCfg!=NULL){
+        OutputDebugStringA("cfg != NULL");
+       }
+       if (this->pluginCfg != NULL && this->pluginCfg->callback!= NULL){
+          OutputDebugStringA("handle method call##1");
+          this->pluginCfg->callback(data->data(), int(data->size()), this->pluginCfg->plugin);
+       }
+    }
+}
+
+void StandardPluginRegisterWithRegistrar(flutter::PluginRegistry* registry, FlutterPlugin* pluginCfg) {
+    FlutterDesktopPluginRegistrarRef registrar = registry->GetRegistrarForPlugin(pluginCfg->channel);
+    StandardPlugin::RegisterWithRegistrar(
+        flutter::PluginRegistrarManager::GetInstance()->GetRegistrar<flutter::PluginRegistrarWindows>(registrar),
+        pluginCfg
+    );
+}
+
+
+
+
+
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
 
 FlutterWindow::~FlutterWindow() {}
+
+void FlutterWindow::RegisterPlugin(char* channel,FlutterPluginMethodCallback callback,void*plugin)
+{
+    OutputDebugStringA("======================,1channel:");
+    FlutterPlugin* fplugin = new FlutterPlugin;
+    fplugin->channel = channel;
+    fplugin->callback = callback;
+    fplugin->plugin = plugin;
+    this->standardplugins.push_back(fplugin);
+}
 
 bool FlutterWindow::OnCreate() {
   if (!Win32Window::OnCreate()) {
@@ -25,6 +106,14 @@ bool FlutterWindow::OnCreate() {
     return false;
   }
   RegisterPlugins(flutter_controller_->engine());
+  printf("================\n");
+  OutputDebugStringA("====\n");
+  for(int i =0;i < standardplugins.size();++i){
+    FlutterPlugin* plugin =standardplugins.at(i);
+    OutputDebugStringA(plugin->channel);
+    StandardPluginRegisterWithRegistrar(flutter_controller_->engine(), plugin);
+  }
+
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {

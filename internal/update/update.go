@@ -146,7 +146,7 @@ func Update(projpath string) error {
 	log.Printf("fix template ...")
 	proj.UpdateFileSym("flutter/runner.go", "runnerlib", "-l"+proj.Name())
 	log.Printf("build go app...")
-	proj.BuildGoApp()
+	proj.BuildGoApp(true)
 	log.Printf("finished")
 	return nil
 }

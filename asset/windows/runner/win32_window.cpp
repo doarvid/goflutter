@@ -44,7 +44,6 @@ int Scale(int source, double scale_factor) {
 void EnableFullDpiSupportIfAvailable(HWND hwnd) {
   HMODULE user32_module = LoadLibraryA("User32.dll");
   if (!user32_module) {
-    printf("EnableFullDpiSupportIfAvailable disabled...\n");
     return;
   }
   auto enable_non_client_dpi_scaling =
@@ -54,8 +53,6 @@ void EnableFullDpiSupportIfAvailable(HWND hwnd) {
     enable_non_client_dpi_scaling(hwnd);
   }
   FreeLibrary(user32_module);
-  
-  printf("EnableFullDpiSupportIfAvailable finshed...\n");
 }
 
 }  // namespace

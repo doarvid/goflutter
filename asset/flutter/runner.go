@@ -5,6 +5,7 @@ package flutter
 //#cgo LDFLAGS: -L./ -L../build/windows/runner/Release {{runnerlib}}
 //#include <runner.h>
 //#include <stdio.h>
+//void pluginMethodCall(void* message,int size,void*plugin);
 import "C"
 import (
 	"unsafe"
@@ -34,6 +35,14 @@ func NewFlutterWindow(dartProj *FlutterDartProject) *FlutterWind {
 func (f *FlutterWind) Create() {
 	C.FlutterWindowCreate(f.flutterWnd, 10, 10, 1280, 720)
 	C.FlutterWindowSetQuitOnClose(f.flutterWnd, 1)
+}
+
+func (f *FlutterWind) RegisterPlugin(plugin FlutterPlugin) {
+	if plugin == nil {
+		return
+	}
+	cchannel := C.CString(plugin.Name())
+	C.FlutterWindowRegisterPlugin(f.flutterWnd, cchannel, C.FlutterPluginMethodCallback(C.pluginMethodCall), unsafe.Pointer(&plugin))
 }
 
 func (f *FlutterWind) SetQuitOnClose(quit_on_close bool) {

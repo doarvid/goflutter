@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FLUTTER_SHELL_PLATFORM_COMMON_PUBLIC_FLUTTER_EXPORT_H_
-#define FLUTTER_SHELL_PLATFORM_COMMON_PUBLIC_FLUTTER_EXPORT_H_
+#ifndef RUNNER_HH
+#define RUNNER_HH
+
+#define RUNNER_EXPORT __declspec(dllexport)
 
 #ifdef FLUTTER_DESKTOP_LIBRARY
 
@@ -30,15 +32,18 @@
 extern "C" {
 #endif  // defined(__cplusplus)
 
+typedef void (*FlutterPluginMethodCallback)(unsigned char* message,int size,void*plugin);
+
+
 RUNNER_EXPORT void *NewFlutterDartProject(char *path);
 RUNNER_EXPORT void FlutterDartProjectSetEntrypointArgs(void *project, int argc, char **argv);
 RUNNER_EXPORT void *NewFlutterWindow(void *dartProject);
+RUNNER_EXPORT void FlutterWindowRegisterPlugin(void *flutterwnd, char* channel,FlutterPluginMethodCallback callback,void*plugin);
 RUNNER_EXPORT int FlutterWindowCreate(void *flutterwnd, int pos_x, int pos_y, int size_height, int size_width);
 RUNNER_EXPORT void FlutterWindowSetQuitOnClose(void *flutterwnd, int quit_and_close);
 RUNNER_EXPORT void FlutterRun();
 RUNNER_EXPORT void FlutterStartup();
 RUNNER_EXPORT void FlutterCleanup();
-
 #if defined(__cplusplus)
 }
 #endif  // defined(__cplusplus)

@@ -5,7 +5,6 @@
 #include "flutter_window.h"
 #include "utils.h"
 
-#include "runner.h"
 
 void *NewFlutterDartProject(char *path)
 {
@@ -34,6 +33,10 @@ void *NewFlutterWindow(void *dartProject)
     return new FlutterWindow(*p);
 }
 
+void FlutterWindowRegisterPlugin(void *flutterwnd, char* channel,FlutterPluginMethodCallback callback,void*plugin){
+    FlutterWindow *window = (FlutterWindow *)flutterwnd;
+    window->RegisterPlugin(channel,callback,plugin);
+}
 int FlutterWindowCreate(void *flutterwnd, int pos_x, int pos_y, int size_height, int size_width)
 {
     FlutterWindow *window = (FlutterWindow *)flutterwnd;
@@ -58,14 +61,11 @@ void FlutterRun()
 }
 
 RUNNER_EXPORT void FlutterStartup(){
-    if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
+  //  if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
         CreateAndAttachConsole();
-        printf("CreateAndAttachConsole\n");
-    }
-    HRESULT res =   ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
-    printf("CoInitializeEx:%d\n",res);
-
+   // }
+    ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 }
 RUNNER_EXPORT void FlutterCleanup(){
-  ::CoUninitialize();
+    ::CoUninitialize();
 }
