@@ -3,9 +3,12 @@ package flutter
 //#cgo CFLAGS:-I./flutter
 //#cgo CFLAGS:-I./ -std=c17
 //#cgo LDFLAGS: -L./ -L../build/windows/runner/Release {{runnerlib}}
-//#include <runner.h>
-//#include <stdio.h>
-//void pluginMethodCall(void* message,int size,void*plugin);
+/*
+#include <stdio.h>
+#include <runner.h>
+typedef void (*FlutterPluginMethodReplyCallback)(int code,unsigned char* message,int size,void*resultptr);
+void pluginMethodCall(void* message,int size,void*plugin,void*resultptr);
+*/
 import "C"
 import (
 	"unsafe"

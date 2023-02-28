@@ -61,9 +61,9 @@ void FlutterRun()
 }
 
 RUNNER_EXPORT void FlutterStartup(){
-  //  if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
+    if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
         CreateAndAttachConsole();
-   // }
+    }
     ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 }
 RUNNER_EXPORT void FlutterCleanup(){

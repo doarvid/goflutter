@@ -13,7 +13,6 @@
 #include <flutter/standard_method_codec.h>
 
 namespace {
-
     class StandardPlugin : public flutter::Plugin {
     public:
         static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar, FlutterPlugin* pluginCfg);
@@ -58,7 +57,7 @@ namespace {
        }
        if (this->pluginCfg != NULL && this->pluginCfg->callback!= NULL){
           OutputDebugStringA("handle method call##1");
-          this->pluginCfg->callback(data->data(), int(data->size()), this->pluginCfg->plugin);
+          this->pluginCfg->callback(data->data(), int(data->size()), this->pluginCfg->plugin,(void*)result.get());
        }
     }
 }
@@ -72,6 +71,26 @@ void StandardPluginRegisterWithRegistrar(flutter::PluginRegistry* registry, Flut
 }
 
 
+
+
+
+void FlutterPluginMethodReply(int code,unsigned char* message,int size,void*resultptr){
+    static const flutter::StandardMethodCodec& decoder = flutter::StandardMethodCodec::GetInstance();
+    flutter::MethodResult<flutter::EncodableValue>*result=(flutter::MethodResult<flutter::EncodableValue>*)resultptr;
+  if (code == 0) {
+      if (message == NULL) {
+          result->Success();
+      }
+      else {
+          decoder.DecodeAndProcessResponseEnvelope(message, size, result);
+      }
+  }
+  else {
+      char myerrno[32] = { 0 };
+      snprintf(myerrno, 32, "%d", code);
+      result->Error(myerrno,(char*) message);
+  }
+}
 
 
 

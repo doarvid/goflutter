@@ -5,7 +5,6 @@
 #ifndef RUNNER_HH
 #define RUNNER_HH
 
-#define RUNNER_EXPORT __declspec(dllexport)
 
 #ifdef FLUTTER_DESKTOP_LIBRARY
 
@@ -32,13 +31,14 @@
 extern "C" {
 #endif  // defined(__cplusplus)
 
-typedef void (*FlutterPluginMethodCallback)(unsigned char* message,int size,void*plugin);
+typedef void (*FlutterPluginMethodCallback)(unsigned char* message,int size,void*plugin,void*resultptr);
 
 
 RUNNER_EXPORT void *NewFlutterDartProject(char *path);
 RUNNER_EXPORT void FlutterDartProjectSetEntrypointArgs(void *project, int argc, char **argv);
 RUNNER_EXPORT void *NewFlutterWindow(void *dartProject);
 RUNNER_EXPORT void FlutterWindowRegisterPlugin(void *flutterwnd, char* channel,FlutterPluginMethodCallback callback,void*plugin);
+RUNNER_EXPORT void FlutterPluginMethodReply(int code,unsigned char* message,int size,void*resultptr);
 RUNNER_EXPORT int FlutterWindowCreate(void *flutterwnd, int pos_x, int pos_y, int size_height, int size_width);
 RUNNER_EXPORT void FlutterWindowSetQuitOnClose(void *flutterwnd, int quit_and_close);
 RUNNER_EXPORT void FlutterRun();

@@ -2,6 +2,8 @@ package main
 
 import (
 	"goflutter/flutter"
+
+	"github.com/go-flutter-desktop/go-flutter/plugin"
 )
 
 type TestChannel struct {
@@ -11,9 +13,9 @@ func (t TestChannel) Name() string {
 	return "testchannel"
 }
 
-func (t TestChannel) Handle(data interface{}) error {
+func (t TestChannel) Handle(data *plugin.MethodCall) (interface{}, error) {
 	println(data)
-	return nil
+	return nil, nil
 }
 
 var (
