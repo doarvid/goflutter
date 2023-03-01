@@ -82,7 +82,10 @@ func (f *FlutterProject) UpdateFile(rootdir string, file string) error {
 		return fmt.Errorf("source file %s is missing,err:%s", srcfile, err.Error())
 	}
 
-	if err := ioutil.WriteFile(dstfile, data, 0777); err != nil {
+	ctx := string(data)
+	newctx := strings.ReplaceAll(ctx, fmt.Sprintf("{{%s}}", "projectname"), f.Name())
+
+	if err := ioutil.WriteFile(dstfile, []byte(newctx), 0777); err != nil {
 		return fmt.Errorf("dst file %s write err:%s", srcfile, err.Error())
 	}
 	return nil

@@ -6,8 +6,6 @@ package cmd
 import (
 	"github.com/doarvid/goflutter/internal/update"
 
-	"log"
-
 	"github.com/spf13/cobra"
 )
 
@@ -22,13 +20,10 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var proj_path string
-		if len(args) == 0 {
-			proj_path = "./"
-		} else {
-			proj_path = args[0]
+		proj_path, err := getProjectPath(args)
+		if err != nil {
+			return
 		}
-		log.Printf("project path:%s", proj_path)
 		update.Update(proj_path)
 	},
 }

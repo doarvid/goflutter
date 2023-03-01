@@ -4,7 +4,10 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"errors"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -43,4 +46,19 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func getProjectPath(args []string) (string, error) {
+	var proj_path string
+	if len(args) == 0 {
+		proj_path = "./"
+	} else {
+		proj_path = args[0]
+	}
+	abspath, err := filepath.Abs(proj_path)
+	if err != nil {
+		return "", errors.New("error path")
+	}
+	log.Printf("project path:%s", abspath)
+	return abspath, nil
 }

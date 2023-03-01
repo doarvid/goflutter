@@ -2,7 +2,7 @@ package flutter
 
 //#cgo CFLAGS:-I./flutter
 //#cgo CFLAGS:-I./ -std=c17
-//#cgo LDFLAGS: -L./ -L../build/windows/runner/Release -lexample
+//#cgo LDFLAGS: -L./ -L../build/windows/runner/Release -l{{projectname}}
 /*
 #include <stdio.h>
 #include <runner.h>

@@ -1,4 +1,4 @@
-module goflutter
+module {{projectname}}
 
 go 1.19
 

@@ -137,14 +137,12 @@ func Update(projpath string) error {
 	for _, f := range files {
 		proj.UpdateFile(assetpath, f)
 	}
+
 	log.Printf("build flutter project ...")
 	if err := proj.Build(); err != nil {
 		log.Printf("project build error %s", err.Error())
 		return err
 	}
-
-	log.Printf("fix template ...")
-	proj.UpdateFileSym("flutter/runner.go", "runnerlib", "-l"+proj.Name())
 	log.Printf("build go app...")
 	proj.BuildGoApp(true)
 	log.Printf("finished")

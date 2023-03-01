@@ -1,7 +1,7 @@
 package main
 
 import (
-	"goflutter/flutter"
+	"{{projectname}}/flutter"
 
 	"github.com/go-flutter-desktop/go-flutter/plugin"
 )
