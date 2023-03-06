@@ -18,6 +18,9 @@ add_library(${BINARY_NAME} SHARED
   "runner.exe.manifest"
 )
 
+add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND go build -o ${CMAKE_INSTALL_PREFIX}/ ../../../)
+
+
 # Apply the standard set of build settings. This can be removed for applications
 # that need different build settings.
 apply_standard_settings(${BINARY_NAME})

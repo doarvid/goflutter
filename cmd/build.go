@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var guibuild bool
+
 // buildCmd represents the build command
 var buildCmd = &cobra.Command{
 	Use:   "build",
@@ -27,10 +29,11 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			return
 		}
-		proj.BuildGoApp(false)
+		proj.BuildGoApp(guibuild)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(buildCmd)
+	buildCmd.Flags().BoolVarP(&guibuild, "gui", "g", false, "no console")
 }
